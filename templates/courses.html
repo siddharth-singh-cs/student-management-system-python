@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Academic Courses{% endblock %}
+{% block page_title %}Academic Courses{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <!-- Left Column: Courses Directory Table -->
+    <div class="col-12 col-lg-8">
+        <div class="card h-100">
+            <div class="card-header bg-white py-3 px-4 border-bottom d-flex align-items-center justify-content-between">
+                <div>
+                    <h5 class="card-title fw-bold m-0 text-dark">Available Courses</h5>
+                    <small class="text-muted">List of active academic programs and enrollments</small>
+                </div>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill">
+                    {{ courses|length }} Total Courses
+                </span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="ps-4">Code</th>
+                            <th scope="col">Course Name</th>
+                            <th scope="col" class="text-center">Enrolled Students</th>
+                            <th scope="col" class="pe-4 text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if courses %}
+                            {% for course in courses %}
+                            <tr>
+                                <td class="ps-4">
+                                    <span class="badge bg-light text-dark border font-monospace px-2 py-1">
+                                        {{ course.course_code }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold text-dark">{{ course.course_name }}</div>
+                                    <small class="text-muted">ID: #{{ course.id }}</small>
+                                </td>
+                                <td class="text-center">
+                                    {% if course.enrolled_students > 0 %}
+                                        <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-1">
+                                            <i class="bi bi-person-fill me-1"></i>{{ course.enrolled_students }} Enrolled
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-light text-secondary rounded-pill px-3 py-1 border">
+                                            0 Enrolled
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td class="pe-4 text-end">
+                                    <a href="{{ url_for('view_students') }}?course={{ course.id }}" class="btn btn-sm btn-light border" title="View Enrolled Students">
+                                        <i class="bi bi-people text-secondary"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center py-5 text-muted">
+                                    <i class="bi bi-journal-x display-6 d-block mb-2 text-secondary opacity-50"></i>
+                                    <p class="mb-1 fw-medium">No courses available</p>
+                                    <p class="small text-muted">Use the form on the right to add your first course.</p>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Add Course Form Card -->
+    <div class="col-12 col-lg-4">
+        <div class="card">
+            <div class="card-header bg-white py-3 px-4 border-bottom">
+                <h5 class="card-title fw-bold m-0 text-dark d-flex align-items-center gap-2">
+                    <i class="bi bi-plus-circle text-primary"></i>
+                    <span>Add New Course</span>
+                </h5>
+                <small class="text-muted">Register a degree or diploma program</small>
+            </div>
+
+            <div class="card-body p-4">
+                <form action="{{ url_for('view_courses') }}" method="POST" novalidate>
+                    <div class="mb-3">
+                        <label for="course_name" class="form-label">Course Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="course_name" name="course_name" 
+                               placeholder="e.g. Bachelor of Computer Science" required>
+                        <div class="form-text">Full formal title of the academic program.</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="course_code" class="form-label">Course Code <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control text-uppercase font-monospace" id="course_code" name="course_code" 
+                               placeholder="e.g. CS101" required>
+                        <div class="form-text">Unique alphanumeric identifier (e.g., CS101, IT102).</div>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary d-flex align-items-center justify-content-center gap-2">
+                            <i class="bi bi-check2-circle fs-6"></i>
+                            <span>Save Course</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Instructional Callout for Learners -->
+        <div class="card border-0 bg-primary-subtle text-primary-emphasis mt-4 p-3 rounded-3">
+            <div class="d-flex gap-2">
+                <i class="bi bi-info-circle-fill fs-5 text-primary"></i>
+                <div class="small">
+                    <strong>Relational Integrity Rule:</strong>
+                    Students cannot be enrolled without selecting a valid course. Always make sure at least one course is registered before adding students.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

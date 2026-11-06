@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}Edit {{ student.full_name }} - Student Management{% endblock %}
+{% block page_title %}Edit Student Information{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-xl-10">
+        <!-- Breadcrumb & Navigation -->
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}" class="text-decoration-none">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('view_students') }}" class="text-decoration-none">Students</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('student_details', id=student.id) }}" class="text-decoration-none">{{ student.full_name }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Edit</li>
+                </ol>
+            </nav>
+            <a href="{{ url_for('student_details', id=student.id) }}" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1">
+                <i class="bi bi-arrow-left"></i> Cancel &amp; Return
+            </a>
+        </div>
+
+        <!-- Edit Form Card -->
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3 px-4 border-bottom">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h5 class="card-title fw-bold m-0 text-dark">Edit Student Record</h5>
+                        <small class="text-muted">Update information for {{ student.full_name }} in MySQL</small>
+                    </div>
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill font-monospace">
+                        Student ID: #{{ student.id }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="card-body p-4">
+                <form action="{{ url_for('edit_student', id=student.id) }}" method="POST" novalidate>
+                    
+                    <!-- Section 1: Personal Details -->
+                    <div class="mb-4">
+                        <h6 class="text-primary fw-bold text-uppercase small mb-3 d-flex align-items-center gap-2">
+                            <i class="bi bi-person-badge"></i> Personal Details
+                        </h6>
+                        <div class="row g-3">
+                            <!-- Full Name -->
+                            <div class="col-12 col-md-6">
+                                <label for="full_name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="full_name" name="full_name" 
+                                       value="{{ student.full_name }}" required>
+                            </div>
+
+                            <!-- Gender -->
+                            <div class="col-12 col-md-6">
+                                <label for="gender" class="form-label">Gender <span class="text-danger">*</span></label>
+                                <select class="form-select" id="gender" name="gender" required>
+                                    <option value="Male" {% if student.gender == 'Male' %}selected{% endif %}>Male</option>
+                                    <option value="Female" {% if student.gender == 'Female' %}selected{% endif %}>Female</option>
+                                    <option value="Other" {% if student.gender == 'Other' %}selected{% endif %}>Other</option>
+                                </select>
+                            </div>
+
+                            <!-- Email Address -->
+                            <div class="col-12 col-md-6">
+                                <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-muted"><i class="bi bi-envelope"></i></span>
+                                    <input type="email" class="form-control" id="email" name="email" 
+                                           value="{{ student.email }}" required>
+                                </div>
+                            </div>
+
+                            <!-- Phone Number -->
+                            <div class="col-12 col-md-6">
+                                <label for="phone" class="form-label">Phone Number <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-muted"><i class="bi bi-telephone"></i></span>
+                                    <input type="tel" class="form-control" id="phone" name="phone" 
+                                           value="{{ student.phone }}" required>
+                                </div>
+                            </div>
+
+                            <!-- Date of Birth -->
+                            <div class="col-12 col-md-6">
+                                <label for="date_of_birth" class="form-label">Date of Birth <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" 
+                                       value="{{ student.date_of_birth }}" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4 text-muted opacity-25">
+
+                    <!-- Section 2: Academic Enrollment -->
+                    <div class="mb-4">
+                        <h6 class="text-primary fw-bold text-uppercase small mb-3 d-flex align-items-center gap-2">
+                            <i class="bi bi-mortarboard"></i> Academic Enrollment
+                        </h6>
+                        <div class="row g-3">
+                            <!-- Registration Number -->
+                            <div class="col-12 col-md-6">
+                                <label for="registration_number" class="form-label">Registration Number <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control text-uppercase font-monospace" id="registration_number" name="registration_number" 
+                                       value="{{ student.registration_number }}" required>
+                            </div>
+
+                            <!-- Course Selection -->
+                            <div class="col-12 col-md-6">
+                                <label for="course_id" class="form-label">Course / Program <span class="text-danger">*</span></label>
+                                <select class="form-select" id="course_id" name="course_id" required>
+                                    {% for course in courses %}
+                                        <option value="{{ course.id }}" {% if student.course_id|string == course.id|string %}selected{% endif %}>
+                                            [{{ course.course_code }}] {{ course.course_name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Year of Study -->
+                            <div class="col-12 col-md-6">
+                                <label for="year_of_study" class="form-label">Year of Study <span class="text-danger">*</span></label>
+                                <select class="form-select" id="year_of_study" name="year_of_study" required>
+                                    {% for yr in range(1, 6) %}
+                                        <option value="{{ yr }}" {% if student.year_of_study|string == yr|string %}selected{% endif %}>
+                                            Year {{ yr }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Date of Admission -->
+                            <div class="col-12 col-md-6">
+                                <label for="admission_date" class="form-label">Date of Admission <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="admission_date" name="admission_date" 
+                                       value="{{ student.admission_date }}" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="d-flex align-items-center justify-content-end gap-2 pt-3 border-top">
+                        <a href="{{ url_for('student_details', id=student.id) }}" class="btn btn-outline-secondary px-4">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4 d-flex align-items-center gap-2">
+                            <i class="bi bi-save2 fs-6"></i>
+                            <span>Save Changes</span>
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

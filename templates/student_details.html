@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}{{ student.full_name }} - Student Profile{% endblock %}
+{% block page_title %}Student Profile{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-xl-10">
+        <!-- Breadcrumb & Header Controls -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}" class="text-decoration-none">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('view_students') }}" class="text-decoration-none">Students</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ student.full_name }}</li>
+                </ol>
+            </nav>
+            <div class="d-flex align-items-center gap-2">
+                <a href="{{ url_for('view_students') }}" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Directory
+                </a>
+                <a href="{{ url_for('edit_student', id=student.id) }}" class="btn btn-sm btn-primary d-flex align-items-center gap-1">
+                    <i class="bi bi-pencil-square"></i> Edit Profile
+                </a>
+                <button type="button" class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1"
+                        onclick="confirmDelete('{{ student.full_name|escape }} ({{ student.registration_number }})', '{{ url_for('delete_student', id=student.id) }}')">
+                    <i class="bi bi-trash"></i> Delete
+                </button>
+            </div>
+        </div>
+
+        <!-- Student Summary Card -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4">
+                <div class="d-flex flex-column flex-md-row align-items-md-center gap-4">
+                    <div class="avatar-lg rounded-circle bg-primary-subtle text-primary fw-bold d-flex align-items-center justify-content-center fs-2" style="width: 76px; height: 76px; min-width: 76px;">
+                        {{ student.full_name[:2].upper() }}
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                            <h3 class="fw-bold text-dark m-0">{{ student.full_name }}</h3>
+                            <code class="text-dark bg-light px-2 py-1 rounded small border font-monospace">
+                                {{ student.registration_number }}
+                            </code>
+                            <span class="badge bg-secondary-subtle text-secondary border">
+                                ID: #{{ student.id }}
+                            </span>
+                        </div>
+                        <p class="text-muted mb-2">
+                            <i class="bi bi-mortarboard-fill text-primary me-1"></i>
+                            <strong>{{ student.course_name }}</strong> ({{ student.course_code }}) &bull; Year {{ student.year_of_study }}
+                        </p>
+                        <div class="d-flex flex-wrap gap-3 small text-muted">
+                            <span><i class="bi bi-envelope me-1"></i>{{ student.email }}</span>
+                            <span><i class="bi bi-telephone me-1"></i>{{ student.phone }}</span>
+                            <span><i class="bi bi-calendar3 me-1"></i>Admitted on {{ student.admission_date }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detail Breakdown Cards (2 Columns) -->
+        <div class="row g-4">
+            <!-- Column 1: Personal Information -->
+            <div class="col-12 col-md-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-white py-3 px-4 border-bottom">
+                        <h6 class="card-title fw-bold m-0 text-dark d-flex align-items-center gap-2">
+                            <i class="bi bi-person text-primary"></i> Personal Details
+                        </h6>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center border-bottom">
+                                <span class="text-muted small">Full Legal Name</span>
+                                <span class="fw-medium text-dark">{{ student.full_name }}</span>
+                            </div>
+                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center border-bottom">
+                                <span class="text-muted small">Gender</span>
+                                <span class="badge bg-light text-dark border">{{ student.gender }}</span>
+                            </div>
+                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center border-bottom">
+                                <span class="text-muted small">Date of Birth</span>
+                                <span class="fw-medium text-dark">{{ student.date_of_birth }}</span>
+                            </div>
+                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center border-bottom">
+                                <span class="text-muted small">Email Address</span>
+                                <a href="mailto:{{ student.email }}" class="text-decoration-none fw-medium">{{ student.email }}</a>
+                            </div>
+                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center border-0">
+                                <span class="text-muted small">Phone Number</span>
+                                <span class="fw-medium text-dark">{{ student.phone }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column 2: Academic & Institutional Information -->
+            <div class="col-12 col-md-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-white py-3 px-4 border-bottom">
+                        <h6 class="card-title fw-bold m-0 text-dark d-flex align-items-center gap-2">
+                            <i class="bi bi-mortarboard text-primary"></i> Academic Enrollment
+                        </h6>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center border-bottom">
+                                <span class="text-muted small">Registration Number</span>
+                                <span class="fw-bold font-monospace text-primary">{{ student.registration_number }}</span>
+                            </div>
+                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center border-bottom">
+                                <span class="text-muted small">Course Code</span>
+                                <span class="badge-course">{{ student.course_code }}</span>
+                            </div>
+                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center border-bottom">
+                                <span class="text-muted small">Program Name</span>
+                                <span class="fw-medium text-dark text-end">{{ student.course_name }}</span>
+                            </div>
+                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center border-bottom">
+                                <span class="text-muted small">Current Level</span>
+                                <span class="badge bg-light text-dark border">Year {{ student.year_of_study }}</span>
+                            </div>
+                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center border-bottom">
+                                <span class="text-muted small">Admission Date</span>
+                                <span class="fw-medium text-dark">{{ student.admission_date }}</span>
+                            </div>
+                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center border-0">
+                                <span class="text-muted small">Record Created At</span>
+                                <span class="text-muted small">{{ student.created_at }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Reusable Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title text-danger d-flex align-items-center gap-2" id="deleteConfirmModalLabel">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <span>Confirm Record Deletion</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="mb-2">Are you sure you want to permanently delete this student record?</p>
+                <div class="alert alert-secondary fw-bold" id="deleteEntityName">{{ student.full_name }}</div>
+                <p class="small text-muted mb-0">
+                    <i class="bi bi-info-circle me-1"></i> This record will be permanently purged from the MySQL database.
+                </p>
+            </div>
+            <div class="modal-footer border-top bg-light">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="POST" action="{{ url_for('delete_student', id=student.id) }}">
+                    <button type="submit" class="btn btn-danger d-flex align-items-center gap-1">
+                        <i class="bi bi-trash-fill"></i>
+                        <span>Delete Record</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

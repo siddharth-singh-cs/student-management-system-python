@@ -1,0 +1,31 @@
+# Environment Variables (CRITICAL: Never commit credentials)
+.env
+
+# Python Bytecode & Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environments
+venv/
+env/
+ENV/
+.venv/
+
+# IDE & Editor Settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Flask & Application Logs
+*.log
+instance/
+.webassets-cache

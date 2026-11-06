@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Overview{% endblock %}
+{% block page_title %}Dashboard Overview{% endblock %}
+
+{% block content %}
+<!-- Welcome & Quick Stats Banner -->
+<div class="row g-4 mb-4">
+    <!-- Total Students Card -->
+    <div class="col-12 col-sm-6 col-xl-4">
+        <div class="card stat-card h-100">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="text-muted small fw-semibold text-uppercase">Total Students</span>
+                    <h2 class="display-6 fw-bold text-dark mt-2 mb-0">{{ total_students }}</h2>
+                    <span class="text-success small fw-medium">
+                        <i class="bi bi-person-check-fill me-1"></i>Enrolled in database
+                    </span>
+                </div>
+                <div class="stat-icon blue">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Courses Card -->
+    <div class="col-12 col-sm-6 col-xl-4">
+        <div class="card stat-card h-100">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="text-muted small fw-semibold text-uppercase">Total Courses</span>
+                    <h2 class="display-6 fw-bold text-dark mt-2 mb-0">{{ total_courses }}</h2>
+                    <span class="text-primary small fw-medium">
+                        <i class="bi bi-book-half me-1"></i>Active academic programs
+                    </span>
+                </div>
+                <div class="stat-icon purple">
+                    <i class="bi bi-journal-bookmark-fill"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions Card -->
+    <div class="col-12 col-xl-4">
+        <div class="card stat-card h-100 bg-white">
+            <span class="text-muted small fw-semibold text-uppercase mb-2 d-block">Quick Actions</span>
+            <div class="d-flex flex-column gap-2">
+                <a href="{{ url_for('add_student') }}" class="btn btn-primary d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-person-plus-fill"></i>
+                    <span>Register New Student</span>
+                </a>
+                <a href="{{ url_for('view_courses') }}" class="btn btn-outline-primary d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-journal-plus"></i>
+                    <span>Manage Courses</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Database Connectivity Notice (Shows if database is empty or not yet connected) -->
+{% if db_error %}
+<div class="alert alert-warning d-flex align-items-center mb-4" role="alert">
+    <i class="bi bi-exclamation-triangle-fill fs-4 me-3 text-warning"></i>
+    <div>
+        <strong>Database Notice:</strong> {{ db_error }}
+        <div class="small mt-1 text-secondary">
+            Ensure MySQL is running and you have executed <code>schema.sql</code> in MySQL Workbench.
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Recently Added Students Section -->
+<div class="card">
+    <div class="card-header bg-white py-3 px-4 border-bottom d-flex align-items-center justify-content-between">
+        <div>
+            <h5 class="card-title fw-bold m-0 text-dark">Recently Added Students</h5>
+            <small class="text-muted">Showing the last 5 registered students</small>
+        </div>
+        <a href="{{ url_for('view_students') }}" class="btn btn-sm btn-outline-secondary">
+            View All Students <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th scope="col" class="ps-4">Student</th>
+                    <th scope="col">Reg. Number</th>
+                    <th scope="col">Course</th>
+                    <th scope="col">Admission Date</th>
+                    <th scope="col" class="text-end pe-4">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if recent_students %}
+                    {% for student in recent_students %}
+                    <tr>
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="avatar-placeholder rounded-circle bg-primary-subtle text-primary fw-bold d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; font-size: 0.85rem;">
+                                    {{ student.full_name[:2].upper() }}
+                                </div>
+                                <div>
+                                    <div class="fw-semibold text-dark">{{ student.full_name }}</div>
+                                    <div class="small text-muted">{{ student.email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <code class="text-dark bg-light px-2 py-1 rounded small border">{{ student.registration_number }}</code>
+                        </td>
+                        <td>
+                            <span class="badge-course">
+                                {{ student.course_code }} - {{ student.course_name }}
+                            </span>
+                        </td>
+                        <td class="text-secondary small">
+                            {{ student.admission_date }}
+                        </td>
+                        <td class="text-end pe-4">
+                            <a href="{{ url_for('student_details', id=student.id) }}" class="btn btn-sm btn-light border" title="View Profile">
+                                <i class="bi bi-eye text-primary"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">
+                            <i class="bi bi-people display-6 d-block mb-2 text-secondary opacity-50"></i>
+                            <p class="mb-1 fw-medium">No students registered yet</p>
+                            <p class="small text-muted mb-3">Get started by enrolling your first student.</p>
+                            <a href="{{ url_for('add_student') }}" class="btn btn-sm btn-primary">
+                                <i class="bi bi-person-plus-fill me-1"></i> Register Student
+                            </a>
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
